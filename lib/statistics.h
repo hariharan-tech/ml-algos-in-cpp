@@ -3,6 +3,13 @@
 #define _VECTOR_H
 #endif
 
-double mean(std::vector<double> arr);
+#ifndef _CSTDLIB
+#include <cstdlib>
+#define _CSTDLIB
+#endif
 
-double dot_product(std::vector<double> arr1, std::vector<double> arr2);
+namespace stats{
+    double mean(std::vector<double> arr);
+
+    double dot(std::vector<double> arr1, std::vector<double> arr2);
+}
