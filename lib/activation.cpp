@@ -150,8 +150,8 @@ double Activation::PReLU::derivative(double y,double alpha,double m)
     return 1;
 }
 
-double Activation::LeakyReLU::function(double y,double alpha) {return Activation::PReLU::function(y,0.01);}
-double Activation::LeakyReLU::derivative(double y,double alpha,bool m) {return Activation::PReLU::derivative(y,0.01,true);}
+double Activation::LeakyReLU::function(double y) {return PReLU::function(y,0.01);}
+double Activation::LeakyReLU::derivative(double y,bool m) {return PReLU::derivative(y,0.01,true);}
 
 double Activation::Softplus::function(double y)
 {
