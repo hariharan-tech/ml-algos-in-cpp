@@ -12,4 +12,5 @@ namespace stats{
     double mean(std::vector<double> arr);
 
     double dot(std::vector<double> arr1, std::vector<double> arr2);
+
 }

@@ -8,8 +8,8 @@ double stats::mean(std::vector<double> arr){
     if(arr.size()==0) exit(-1);
     double mean_val = 0;
     for(unsigned int i=0;i<arr.size();i++) 
-        mean_val += (arr[i]/arr.size());
-    return mean_val;
+        mean_val += (arr[i]);
+    return mean_val/arr.size();
 }
 
 double stats::dot(std::vector<double> arr1, std::vector<double> arr2){
