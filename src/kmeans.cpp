@@ -34,6 +34,8 @@ int main(){
         k_center.emplace_back(points[rand_ind[i]]);
     }
 
+    // Vector for count of values to find mean
+    // std::vector<unsigned int> count_for_mean(K_VAL,0);
 
     // K Means clustering
     unsigned int iterations = 5;
@@ -53,8 +55,34 @@ int main(){
             }
             // Update the assignment..
             points[i].assignment = index;
+            // count_for_mean[index] +=1;
         }
-        for(unsigned int j=0;j<points.size();j++) std::cout<<points[j].assignment<<", ";
+        // Update the centroids
+        for(unsigned int j=0;j<K_VAL;j++){
+            unsigned int count=0;
+            std::vector<double> zeros(k_center[j].f_dim,0);
+            k_center[j].features = zeros;
+            for(unsigned int i=0;i<points.size();i++){
+                if(points[i].assignment==j){
+                    ++count;
+                    for(unsigned int k = 0;k<k_center[j].f_dim;k++){
+                        k_center[j].features[k] += points[i].features[k];
+                    }
+                }
+            }
+            for(unsigned int k = 0;k<k_center[j].f_dim;k++){
+                k_center[j].features[k] /= count;
+            }
+        }
+        // for(unsigned int j=0;j<points.size();j++) std::cout<<points[j].assignment<<", ";
+
+        for(unsigned int i=0;i<k_center.size();i++){
+            std::cout<<i<<" - ";
+            for(unsigned int j=0;j<k_center[i].f_dim;j++){
+                std::cout<<k_center[i].features[j]<<", ";
+            }
+            std::cout<<std::endl;
+        }
         std::cout<<std::endl;
     }
     return 0;
