@@ -8,7 +8,9 @@ double abs(double x)
 }
 
 double Activation::Identity::function(double y) {return y;}
-double Activation::Identity::derivative(double y) {return 1;}
+double Activation::Identity::derivative(double y) {return derivative(y,true);}
+using namespace Activation::Identity;
+double derivative(double y, bool m) {return 1.0;} 
 
 double Activation::Binary_step::function(double y) {return y>=0;}
 bool Activation::Binary_step::isvalid(double y) {return (y==0 || y==1);}
@@ -17,6 +19,7 @@ double Activation::Sigmoid::function(double y)
 {
     return 1/(1+exp((-1)*y));
 }
+double Activation::Sigmoid::derivative(double y) {return derivative(y,true);}
 double Activation::Sigmoid::derivative(double y,bool m)
 {
     if(m)
@@ -142,7 +145,7 @@ double Activation::PReLU::function(double y,double alpha)
     if(y<0)
         return alpha*y;
     return y;
-}
+}   
 double Activation::PReLU::derivative(double y,double alpha,double m)
 {
     if(y<0)
