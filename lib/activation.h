@@ -17,6 +17,7 @@ namespace Activation{
     namespace Identity{                 // The Identity activation function
         double function(double y);
         double derivative(double y);
+        double derivative(double y, bool m);
     }
     namespace Binary_step{              // Binary step function
         double function(double y);      //Not differentiable at y=0
