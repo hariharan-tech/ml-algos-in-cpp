@@ -13,11 +13,16 @@
 #define __MATH_H
 #endif
 
+#ifndef _IOSTREAM_H
+#include<iostream>
+#define _IOSTREAM_H
+#endif
+
 namespace Activation{
     namespace Identity{                 // The Identity activation function
         double function(double y);
-        double derivative(double y);
         double derivative(double y, bool m);
+        double derivative(double y);
     }
     namespace Binary_step{              // Binary step function
         double function(double y);      //Not differentiable at y=0
@@ -26,13 +31,14 @@ namespace Activation{
     }
     namespace Sigmoid{                  // Binary sigmoidal activation function
         double function(double y);
-        double derivative(double y,bool m);
         bool isValid(double y);
+        double derivative(double y,bool m);
+        double derivative(double y);
     }
     namespace Tanh{                     // Tanh activation function
         double function(double y);
-        double derivative(double y,bool m);
         bool isvalid(double y);
+        double derivative(double y,bool m);
     }
     namespace ArcTan{                   // Inverse Tan activation function
         double function(double y);
