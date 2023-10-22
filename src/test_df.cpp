@@ -1,4 +1,4 @@
-#include "dataframe.h"
+#include "../lib/dataframe.h"
 #include<iostream>
 
 #ifndef _FSTREAM_H
@@ -9,7 +9,12 @@
 using namespace std;
 int main()
 {
-    ifstream fin("Data.csv",ios::in);
+    ifstream fin("./data/Data.csv",ios::in);
+    if(!fin)
+    {
+        cerr<<"Error: File does not exist\n";
+        exit(1);
+    }
     vector<vector<double>> v;
     // fin.open("Data.csv",ios::in);
     Dataframe df(fin);
