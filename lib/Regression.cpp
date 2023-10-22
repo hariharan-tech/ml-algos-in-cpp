@@ -62,7 +62,7 @@ void Regression::fit(bool is_batch,unsigned int epochs,double alpha,Dataframe& d
 }
 void Regression::fit(bool is_batch,unsigned int epochs,double alpha,Dataframe& df)
 {
-    fit(true,epochs,alpha,df,NULL);
+    fit(is_batch,epochs,alpha,df,NULL);
 }
 void Regression::fit(unsigned int epochs,double alpha,Dataframe& df)
 {
