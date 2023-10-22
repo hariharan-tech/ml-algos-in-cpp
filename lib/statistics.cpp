@@ -13,7 +13,11 @@ double stats::mean(std::vector<double> arr){
 }
 
 double stats::dot(std::vector<double> arr1, std::vector<double> arr2){
-    if((arr1.size()!=arr2.size())||(arr1.size()==0)||(arr2.size()==0)) exit(-1);
+    if((arr1.size()!=arr2.size())||(arr1.size()==0)||(arr2.size()==0))
+    {
+        std::cerr<<"The dimensions of the two input vectors "<<arr1.size()<<" and "<<arr2.size()<<" don't match!\n";
+        exit(-1);
+    }
     double dot_p = 0;
     for(unsigned int i=0;i<arr1.size();i++) 
         dot_p += (arr1[i]*arr2[i]);
