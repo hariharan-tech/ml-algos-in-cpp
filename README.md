@@ -1,1 +1,1 @@
-# ml-algo-in-cpp
+# ml-algos-in-cpp
