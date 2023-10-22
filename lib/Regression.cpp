@@ -74,10 +74,10 @@ void Regression::Back_propagate_batch(unsigned int epochs,std::ofstream* hist)
     unsigned int i,j,k,n=data_table.size();
     double w,wb,inc;
     std::vector<double> diff(n,0),y(n,0);     // Vector of predictions made for each training example; update once every epoch
-    if(!hist)
-        std::cerr<<"Error: Empty file!\n";
-    else    
-        std::cerr<<"Success: File exists!\n";
+    // if(!hist)
+    //     std::cerr<<"Error: Empty file!\n";
+    // else    
+    //     std::cerr<<"Success: File exists!\n";
     for(i=0;i<epochs;i++)
     {
         // std::cout<<"Entered here!\n";
