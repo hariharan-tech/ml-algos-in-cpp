@@ -13,6 +13,16 @@
 #define _DATAFRAME_H
 #endif
 
+#ifndef _ALGORITHM_H
+#include<algorithm>
+#define _ALGORITHM_H
+#endif
+
+#ifndef _NUMERIC_H
+#include<numeric>
+#define _NUMERIC_H
+#endif
+
 typedef std::vector<std::vector<double>> vvd;
 
 double Identity_der(double);
