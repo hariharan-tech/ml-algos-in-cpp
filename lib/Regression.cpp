@@ -72,8 +72,8 @@ void Regression::fit(unsigned int epochs,double alpha,Dataframe& df)
 void Regression::Back_propagate_batch(unsigned int epochs,std::ofstream* hist)
 {
     unsigned int i,j,k,n=data_table.size();
-    double w,wb,inc;
-    std::vector<double> diff(n,0),y(n,0);     // Vector of predictions made for each training example; update once every epoch
+    double w,wb;
+    std::vector<double> diff(n,0),y(n,0),inc(n,0);     // Vector of predictions made for each training example; update once every epoch
     // if(!hist)
     //     std::cerr<<"Error: Empty file!\n";
     // else    
@@ -96,19 +96,20 @@ void Regression::Back_propagate_batch(unsigned int epochs,std::ofstream* hist)
             // std::cout<<"Entered: "<<loss<<"\n";
             *hist<<std::to_string(loss)<<"\n";
         }
+        for(j=0;j<n;j++)
+            inc[j]=diff[j]*activation_der(y[j]);
+        wb=std::accumulate(inc.begin(),inc.end(),0);
         for(k=0;k<dim;k++)
         {
             w=0;
-            wb=0;
             for(j=0;j<n;j++)
             {
-                inc=diff[j]*activation_der(y[j]);
-                w+=inc*data_table[j][k];
-                wb+=inc;
+                w+=inc[j]*data_table[j][k];
+                // wb+=inc[j];
             }
             weights[k]+=(alpha*w/n);
-            bias+=(alpha*wb/n);
         }
+        bias+=(alpha*wb/n);
     }
     if(hist)
         export_weights(hist);
