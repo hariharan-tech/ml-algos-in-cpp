@@ -30,7 +30,7 @@ void transpose2x2(float* ip_mat, float* op_mat){
     op_mat[2] = ip_mat[1];
 }
 
-void eigenval_vec(float* input_mat, float* eigenvalues, float* eigenvectors){
+void eigenval_vec_2x2(float* input_mat, float* eigenvalues, float* eigenvectors){
     // Uses Jacobi Eigenvalue algorithm
     // returns a 2x2 SP Floating point matrix with eigen values in 1D forms
     // Accepts the input matrix, location in memory to store eigenvalues and eigenvectors

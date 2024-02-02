@@ -34,7 +34,27 @@ extern void transpose2x2(float* ip_mat, float* op_mat){
     op_mat[2] = ip_mat[1];
 }
 
-extern void eigenval_vec(float* input_mat, float* eigenvalues, float* eigenvectors){
+// - Find the position of maximum non diagonal element for a symmetric matrix
+template <int n>
+extern void non_diag_max(float* input_mat, int *r, int *c){
+    float max_val = 0; int max_r=-1,max_c=-1;
+    for(int i=0;i<n;i++){
+        for(int j=i+1;j<n;j++){
+            if(input_mat[n*i+j]>max_val){
+                max_val = input_mat[n*i+j];
+                max_r = i; max_c = j;
+            }
+        }
+    }
+    *r = max_r; *c = max_c;
+}
+
+// - Computes eigenvalues and eigenvectors using iterative Jacobi algorithm
+extern void eigen(float* input_mat,float* eigenvalues, float* eigenvectors){ // input_mat is expected to be the covariance matrix
+    
+}
+
+extern void eigenval_vec2x2(float* input_mat, float* eigenvalues, float* eigenvectors){
     // Uses Jacobi Eigenvalue algorithm
     // returns a 2x2 SP Floating point matrix with eigen values in 1D forms
     // Accepts the input matrix, location in memory to store eigenvalues and eigenvectors
@@ -73,7 +93,7 @@ extern void eigenval_vec(float* input_mat, float* eigenvalues, float* eigenvecto
 
 void test_eigen(){
     float input_mat[4] = {8.0,2.0,2.0,4.0}, eigen_vals[4], eigen_vec[4];
-    eigenval_vec(&input_mat,&eigen_vals,&eigen_vec);
+    eigenval_vec2x2(input_mat,eigen_vals,eigen_vec);
     printf("The eigenvalues are: %f %f\nThe eigenvector is\n",eigen_vals[0],eigen_vals[3]);
     for(int i=0;i<4;i++){
         printf("%f\t",eigen_vec[i]);
@@ -83,7 +103,7 @@ void test_eigen(){
 
 void test_matmul2x2_loop(){
     float mat1[4] = {1.0,2.0,2.0,1.0}, mat2[4] = {1.0,1.0,0.0,1.0}, op_mat[4];
-    matrix_2x2_mul_loop(&mat1,&mat2,&op_mat);
+    matrix_2x2_mul_loop(mat1,mat2,op_mat);
     for(int i=0;i<4;i++){
         printf("%f\t",op_mat[i]);
         if(i==1) printf("\n");
@@ -92,9 +112,26 @@ void test_matmul2x2_loop(){
 
 void test_matmul2x2_hc(){
     float mat1[4] = {1.0,2.0,2.0,1.0}, mat2[4] = {1.0,1.0,0.0,1.0}, op_mat[4];
-    matrix_2x2_mul_hc(&mat1,&mat2,&op_mat);
+    matrix_2x2_mul_hc(mat1,mat2,op_mat);
     for(int i=0;i<4;i++){
         printf("%f\t",op_mat[i]);
         if(i==1) printf("\n");
     }
+}
+
+void test_non_diag_max(){
+    float mat1[] = {
+        1, 2, 3, 4,
+        2, 5, 6, 7,
+        3, 6, 8, 9,
+        4, 7, 9, 10
+    };
+    int r,c;
+    non_diag_max<4>(mat1,&r,&c);
+    printf("(%d,%d)",r,c);
+}
+
+int main(){
+    test_non_diag_max();
+    return 0;
 }
