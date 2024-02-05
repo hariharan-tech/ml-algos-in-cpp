@@ -1,9 +1,8 @@
-#include "SVD.cpp"
+#include <stdio.h>
+#include "SVD.hpp"
+#include "SVD_top.h"
 
-#define PRECISION 1.0f
-#define DIM 10
-
-void svd(float a_in[DIM*DIM],float eigval_op[DIM*DIM],float eigvec_op[DIM*DIM])
+void svd(const float a_in[DIM*DIM],float eigval_op[DIM*DIM],float eigvec_op[DIM*DIM])
 {
 
   float rot_matrix[DIM*DIM],rot_matrix_t[DIM*DIM];
@@ -22,6 +21,7 @@ void svd(float a_in[DIM*DIM],float eigval_op[DIM*DIM],float eigvec_op[DIM*DIM])
   non_diag_sum<DIM>(a,&prec);
   ITER_LOOP: for(int i=0;prec>PRECISION;i++)
   {
+	  printf("%d",i);
       non_diag_max<DIM>(a,&row,&col);
       rot_init<DIM>(row,col,a,rot_matrix,rot_matrix_t);
       matrix_mul<DIM>(rot_matrix,a,temp);

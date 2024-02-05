@@ -4,7 +4,7 @@
 #include <math.h>
 
 #define DIM 5 // N X N Matrix dimension, this DIM is N
-#define PRECISION 0.5f // Off diagonal sum threshold for stopping iteration
+#define PRECISION DIM*(DIM-1)*0.5f // Off diagonal sum threshold for stopping iteration
 
 /*Matrix Multiplication of 2 matrices of dimension N X N (Where N is specified with template)
   #### Inputs
@@ -41,7 +41,9 @@ void rot_init(const int i, const int j, const float a[],float rot_mat[],float ro
 { 
    float aii, aij; // variable to store cos(theta) and sin(theta)
    float theta;
+
    theta=0.5*atan((2*a[i*N+j])/(a[i*N+i]-a[j*N+j])); // Calculating theta using (2aij/(aii-ajj))
+   std::cout<<theta<<"\t";
    aii= cos(theta);
    aij= sin(theta);
 
@@ -80,7 +82,7 @@ void non_diag_max(float const input_mat[], int *r, int *c)
     for(int i=0;i<N;i++){
         for(int j=i+1;j<N;j++){
             if(abs(input_mat[N*i+j])>max_val){
-                max_val = input_mat[N*i+j];
+                max_val = abs(input_mat[N*i+j]);
                 max_r = i; max_c = j;
             }
         }
@@ -105,6 +107,16 @@ void non_diag_sum(float const input_mat[], float *sum){
 }
 
 
+template<int N>
+void non_diag_sum_opt(float const input_mat[], float *sum){
+  float temp=0;
+  for(int i=0;i<N;i++){
+    for(int j=i+1;j<N;j++)
+      temp += (i==j)?0:abs(input_mat[i*N+j]);
+  }
+  *sum = temp;
+}
+
 int main()
 {
   // Declare variables (and initialize some)
@@ -126,14 +138,21 @@ int main()
 
   // Find the initial non-diagonal values absolute sum
   non_diag_sum<DIM>(a,&prec);
+  // non_diag_sum_opt<DIM>(a,&prec_opt);
 
   // Iterate until the precision is greater the set Threshold
   for(int i=0;prec>PRECISION;i++)
+  // for(int i=0;i<DIM*4;i++)
   {   
       non_diag_max<DIM>(a,&row,&col); // Find the location of non-diagonal absolute max value's row and col
+    //   for(int r=0;r<DIM;r++)
+    // {for(int c=0;c<DIM;c++)
+    //   std::cout<<a[r*DIM+c]<<"  ";
+    // std::cout<<std::endl;}
+      
       rot_init<DIM>(row,col,a,rot_matrix,rot_matrix_t); // Create the required J and J' matrix with row and col
       matrix_mul<DIM>(rot_matrix,a,temp); // Matrix multiply J and A
-      matrix_mul<DIM>(temp,rot_matrix_t,a); // Computing JAJ' now
+      matrix_mul<DIM>(temp,rot_matrix_t,a); // Computing A_i+1 = J*A_i*J' now
 
       // The final eigenvector is a product of rotation matrix at each iteration
       matrix_mul<DIM>(rot_matrix,eigvec,temp); // Multiplying Ji with J to find eigenvector
@@ -144,13 +163,15 @@ int main()
 
       // Find the non-diagonal absolute sum
       non_diag_sum<DIM>(a,&prec);
+      // non_diag_sum_opt<DIM>(a,&prec_opt);
       std::cout<<i<<"\t"<<prec<<"\t\t\t\t";
       
       // Printing eigenvalues for each iteration
       for (int k=0;k<DIM;k++)
-      {
+      // {  for(int j=0;j<DIM;j++)
           std::cout<<a[k*DIM+k]<<" ";
-      }
+          // std::cout<<std::endl;
+      // }
       std::cout<<std::endl;
   }
   // Printing final eigenvectors
@@ -159,6 +180,6 @@ int main()
   {
     for (int j=0;j<DIM;j++)
       std::cout<<eigvec[i*DIM+j]<<" ";
-    std::cout<<std::endl;
+    std::cout<<std::endl<<std::endl;
   }
 }
