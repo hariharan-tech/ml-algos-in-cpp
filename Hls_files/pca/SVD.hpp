@@ -54,22 +54,22 @@ void non_diag_max(float const input_mat[N*N], int *r, int *c)
     float max_val = 0,temp; int max_r=0,max_c=0;
 //    unsigned char flag;
     MAX_R: for(int i=0;i<N;i++){
-        MAX_C: for(int j=i+1;j<N;j++){
-        	temp = hls::fabs(input_mat[i*N+j]);
-			if(temp>max_val){
-				max_val = temp;
-				max_r = i; max_c = j;
-			}
-//		MAX_C: for(int j=0;j<N;j++){
-//			//#pragma HLS PIPELINE II=1
-//        	if(i>=j) break;
-//        	else{
-//				temp = hls::fabs(input_mat[i*N+j]);
-//				if(temp>max_val){
-//					max_val = temp;
-//					max_r = i; max_c = j;
-//				}
-//        	}
+//        MAX_C: for(int j=i+1;j<N;j++){
+//        	temp = hls::fabs(input_mat[i*N+j]);
+//			if(temp>max_val){
+//				max_val = temp;
+//				max_r = i; max_c = j;
+//			}
+		MAX_C: for(int j=0;j<N;j++){
+			//#pragma HLS PIPELINE II=1
+        	if(i<=j) break;
+        	else{
+				temp = hls::fabs(input_mat[i*N+j]);
+				if(temp>max_val){
+					max_val = temp;
+					max_r = i; max_c = j;
+				}
+        	}
         }
     }
     *r = max_r; *c = max_c;
