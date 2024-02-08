@@ -1,8 +1,7 @@
-#include <math.h>
-
+#include "hls_math.h"
 
 template <int N>
-void matrix_mul(const float a[],const float b[], float c[])
+void matrix_mul(const float a[N*N],const float b[N*N], float c[N*N])
 {
    // Matrix multiplication of 2 NxN matrices 
    float sum;
@@ -20,18 +19,19 @@ void matrix_mul(const float a[],const float b[], float c[])
 }
 
 template<int N >
-void rot_init(const int i, const int j, const float a[],float rot_mat[],float rot_mat_t[])
+void rot_init(const int i, const int j, const float a[N*N],float rot_mat[N*N],float rot_mat_t[N*N])
 { 
    // To calculate the rotation Matrix J and J transpose
    float aii, aij;
    float theta;
-   theta=0.5*atan((2*a[i*N+j])/(a[i*N+i]-a[j*N+j]));
-   aii= cos(theta);
-   aij= sin(theta);
+   theta=0.5*hls::atanf((2*a[i*N+j])/(a[i*N+i]-a[j*N+j]));
+   aii= hls::cosf(theta);
+   aij= hls::sinf(theta);
 
    ROT_INIT_R: for(int r=0; r<N ;r++)
      ROT_INIT_C: for(int c=0;c<N; c++)
      {
+	   #pragma HLS PIPELINE II=1
        rot_mat[r*N+c] = c==r?1:0 ; 
        rot_mat_t[r*N+c] = c==r?1:0 ; 
      }
@@ -49,27 +49,40 @@ void rot_init(const int i, const int j, const float a[],float rot_mat[],float ro
 }
 
 template <int N>
-void non_diag_max(float const input_mat[], int *r, int *c)
+void non_diag_max(float const input_mat[N*N], int *r, int *c)
 {
     float max_val = 0,temp; int max_r=0,max_c=0;
-    LOSS_R: for(int i=0;i<N;i++){
-        LOSS_C: for(int j=0;j<N;j++){
-			temp = (input_mat[N*i+j]>0)?(input_mat[N*i+j]):(-1*input_mat[N*i+j]);
+//    unsigned char flag;
+    MAX_R: for(int i=0;i<N;i++){
+        MAX_C: for(int j=i+1;j<N;j++){
+        	temp = hls::fabs(input_mat[i*N+j]);
 			if(temp>max_val){
 				max_val = temp;
 				max_r = i; max_c = j;
 			}
+//		MAX_C: for(int j=0;j<N;j++){
+//			//#pragma HLS PIPELINE II=1
+//        	if(i>=j) break;
+//        	else{
+//				temp = hls::fabs(input_mat[i*N+j]);
+//				if(temp>max_val){
+//					max_val = temp;
+//					max_r = i; max_c = j;
+//				}
+//        	}
         }
     }
     *r = max_r; *c = max_c;
 }
 
 template<int N>
-void non_diag_sum(float const input_mat[], float *sum){
+void non_diag_sum(float const input_mat[N*N], float *sum){
   float temp=0;
   NON_DIAG_SUM_R:for(int i=0;i<N;i++){
-    NON_DIAG_SUM_C:for(int j=0;j<N;j++)
-      temp += (i>=j)?0:abs(input_mat[i*N+j]);
+    NON_DIAG_SUM_C:for(int j=0;j<N;j++){
+      //#pragma HLS PIPELINE II=1
+      temp += (i>=j)?0:hls::fabs(input_mat[i*N+j]);
+    }
   }
   *sum = 2*temp;
 }

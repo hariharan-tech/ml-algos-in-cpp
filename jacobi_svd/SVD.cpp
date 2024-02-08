@@ -3,8 +3,8 @@
 #include <iostream>
 #include <math.h>
 
-#define DIM 5 // N X N Matrix dimension, this DIM is N
-#define PRECISION DIM*(DIM-1)*0.5f // Off diagonal sum threshold for stopping iteration
+#define DIM 10 // N X N Matrix dimension, this DIM is N
+#define PRECISION DIM*(DIM-1)*0.15f // Off diagonal sum threshold for stopping iteration
 
 /*Matrix Multiplication of 2 matrices of dimension N X N (Where N is specified with template)
   #### Inputs
@@ -78,11 +78,12 @@ void rot_init(const int i, const int j, const float a[],float rot_mat[],float ro
 template <int N>
 void non_diag_max(float const input_mat[], int *r, int *c)
 {
-    float max_val = 0; int max_r,max_c;
+    float max_val = 0,temp; int max_r,max_c;
     for(int i=0;i<N;i++){
         for(int j=i+1;j<N;j++){
-            if(abs(input_mat[N*i+j])>max_val){
-                max_val = abs(input_mat[N*i+j]);
+            temp = abs(input_mat[i*N+j]);
+            if(temp>max_val){
+                max_val = temp;
                 max_r = i; max_c = j;
             }
         }
@@ -120,11 +121,17 @@ void non_diag_sum_opt(float const input_mat[], float *sum){
 int main()
 {
   // Declare variables (and initialize some)
-  float a[DIM*DIM]= { 10, 2, 3, 4, 5,
-                      2, 6, 7, 8, 2,
-                      3, 7, 10, 11, 4,
-                      4, 8, 11, 10, 1,
-                      5, 2, 4, 1, 18};
+  float a[DIM*DIM] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        2, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+        3, 12, 20, 21, 22, 23, 24, 25, 26, 27,
+        4, 13, 21, 28, 29, 30, 31, 32, 33, 34,
+        5, 14, 22, 29, 35, 36, 37, 38, 39, 40,
+        6, 15, 23, 30, 36, 41, 42, 43, 44, 45,
+        7, 16, 24, 31, 37, 42, 46, 47, 48, 49,
+        8, 17, 25, 32, 38, 43, 47, 50, 51, 52,
+        9, 18, 26, 33, 39, 44, 48, 51, 53, 54,
+        10, 19, 27, 34, 40, 45, 49, 52, 54, 55
+    };
   float rot_matrix[DIM*DIM],rot_matrix_t[DIM*DIM];
   float temp[DIM*DIM],eigvec[DIM*DIM];
 
