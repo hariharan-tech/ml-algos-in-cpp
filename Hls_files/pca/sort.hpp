@@ -1,9 +1,10 @@
 #include <limits>
 #define THRESHOLD 0.98f
+#include<iostream>
 
-template <int N>
-void shiftRight(int from, float buffer[N]){
-	SHIFT_R_LOOP:for(int i=N-1;i>from-1;i++){
+template <int N,typename T>
+void shiftRight(int from, T buffer[N]){
+	SHIFT_R_LOOP:for(int i=N-1;i>from-1;i--){
 		buffer[i] = buffer[i-1];
 	}
 }
@@ -35,28 +36,30 @@ void sort_desc(const float data[N],float sorted_data[N], int sorted_index[N])
 	int ibuff[N];
 	for (int i=0; i<N;i++)
 	{
-		databuff[i]=-std::numeric_limits<float>.max();
+		databuff[i]=-std::numeric_limits<float>::max();
 		ibuff[i]=-1;
 	}
+
 
     DATA_IND: for (int i=0; i<N;i++)
     	BUFF_IND : for(int j=0;j<N;j++)
     	{
             if(data[i]>databuff[j])
             {
-            	shiftRight<N>(j,databuff);
-            	shiftRight<N>(j,ibuff);
+            	shiftRight<N,float>(j,databuff);
+            	shiftRight<N,int>(j,ibuff);
             	databuff[j]=data[i];
             	ibuff[j]=i;
             	break;
+
             }
-    	}
+        }
 
+    for(int i=0;i<N;i++)
+    {
+    	sorted_data[i]=databuff[i];
+    }
 }
 
 
-// Performs the sort and select operation
-template<int N>
-void sort_select(const float eigenvec[N*N], const float eignen_val_index[N*N], float dominant_eigvec[], int index){
 
-}
