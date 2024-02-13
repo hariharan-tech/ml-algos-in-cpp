@@ -3,7 +3,7 @@
 
 template <int N,typename T>
 void shiftRight(int from, T buffer[N]){
-	SHIFT_R_LOOP:for(int i=N-1;i>from-1;i--){
+	SHIFT_R_LOOP:for(int i=N-1;i>from;i--){
 		buffer[i] = buffer[i-1];
 	}
 }
