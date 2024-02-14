@@ -2,7 +2,8 @@
 #include "SVD.hpp"
 #include "SVD_top.h"
 
-void svd(const float a_in[DIM*DIM],float eigval_op[DIM],float eigvec_op[DIM*DIM])
+//void svd(const float a_in[DIM*DIM],float eigval_op[DIM],float eigvec_op[DIM*DIM])
+void svd(const float a_in[DIM*DIM],float eigval_op[DIM],float eigvec_op[DIM*DIM],int count)
 {
   float rot_matrix[DIM*DIM],rot_matrix_t[DIM*DIM];
   float temp[DIM*DIM],eigvec[DIM*DIM],a[DIM*DIM];
@@ -18,7 +19,7 @@ void svd(const float a_in[DIM*DIM],float eigval_op[DIM],float eigvec_op[DIM*DIM]
   int row,col;
   float prec;
   non_diag_sum<DIM>(a,&prec);
-  ITER_LOOP: for(int i=0;i<DIM*(DIM-1);i++)
+  ITER_LOOP: for(int i=0;i<count;i++)
   {
       non_diag_max<DIM>(a,&row,&col);
       rot_init<DIM>(row,col,a,rot_matrix,rot_matrix_t);

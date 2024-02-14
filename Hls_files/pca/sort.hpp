@@ -4,6 +4,7 @@
 template <int N,typename T>
 void shiftRight(int from, T buffer[N]){
 	SHIFT_R_LOOP:for(int i=N-1;i>from;i--){
+		#pragma HLS PIPELINE II=1
 		buffer[i] = buffer[i-1];
 	}
 }
@@ -44,7 +45,7 @@ void sort_desc(const float data[N],float sorted_data[N], int sorted_index[N])
 	BUFF_INIT_LOOP:for (int i=0; i<N;i++)
 	{
 		#pragma HLS UNROLL
-		databuff[i]=-std::numeric_limits<float>::max();
+		databuff[i]=std::numeric_limits<float>::lowest();
 		ibuff[i]=-1;
 	}
 

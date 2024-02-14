@@ -2,8 +2,9 @@
 
 DIM = 4
 TEST_VECTOR_COUNT = 10
-INPUT_FILE_NAME = f"input_vector_{DIM}x{DIM}.h"
-OUTPUT_FILE_NAME = f"output_vector_{DIM}x{DIM}.h"
+LOC = ".\..\Hls_files\pca\\"
+INPUT_FILE_NAME = f"{LOC}input_vector_{DIM}x{DIM}.h"
+OUTPUT_FILE_NAME = f"{LOC}output_vector_{DIM}x{DIM}.h"
 
 import numpy as np
 
