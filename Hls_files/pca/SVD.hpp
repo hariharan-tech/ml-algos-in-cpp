@@ -80,7 +80,7 @@ void non_diag_sum(float const input_mat[N*N], float *sum){
   float temp=0;
   NON_DIAG_SUM_R:for(int i=0;i<N;i++){
     NON_DIAG_SUM_C:for(int j=0;j<N;j++){
-      //#pragma HLS PIPELINE II=1
+//      #pragma HLS UNROLL
       temp += (i>=j)?0:hls::fabs(input_mat[i*N+j]);
     }
   }
