@@ -4,6 +4,11 @@
 
 void svd(const float a_in[DIM*DIM],float eigval_op[DIM],float eigvec_op[DIM*DIM])
 {
+#pragma HLS INTERFACE mode=s_axilite port=return
+#pragma HLS INTERFACE mode=s_axilite port=a_in
+#pragma HLS INTERFACE mode=s_axilite port=eigval_op
+#pragma HLS INTERFACE mode=s_axilite port=eigvec_op
+
   float rot_matrix[DIM*DIM],rot_matrix_t[DIM*DIM];
   float temp[DIM*DIM],eigvec[DIM*DIM],a[DIM*DIM];
   READ_A_LOOP:for(int i=0;i<DIM*DIM;i++){
