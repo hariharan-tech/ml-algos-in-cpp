@@ -3,14 +3,19 @@
 template <int N>
 void matrix_mul(const float a[N*N],const float b[N*N], float c[N*N])
 {
-   // Matrix multiplication of 2 NxN matrices 
+//	#pragma HLS ARRAY_RESHAPE variable=a type=cyclic factor=N
+//	#pragma HLS ARRAY_RESHAPE variable=b type=block factor=N
+//   // Matrix multiplication of 2 NxN matrices
+//   #pragma HLS inline off
    float sum;
+
    MATMUL_R: for (int i=0;i<N;i++)
       MATMUL_C: for (int j=0; j<N;j++)
       {
          sum=0;
          MATMUL_ADD: for (int k=0;k<N;k++)
          {
+        	 //#pragma HLS PIPELINE II=1
             sum+=a[N*i+k]*b[k*N+j];
          }
          c[i*N+j]=sum;
@@ -51,6 +56,7 @@ void rot_init(const int i, const int j, const float a[N*N],float rot_mat[N*N],fl
 template <int N>
 void non_diag_max(float const input_mat[N*N], int *r, int *c)
 {
+#pragma HLS INLINE off
     float max_val = 0,temp; int max_r=0,max_c=0;
 //    unsigned char flag;
     MAX_R: for(int i=0;i<N;i++){
@@ -61,7 +67,7 @@ void non_diag_max(float const input_mat[N*N], int *r, int *c)
 //				max_r = i; max_c = j;
 //			}
 		MAX_C: for(int j=0;j<N;j++){
-			//#pragma HLS PIPELINE II=1
+			#pragma HLS PIPELINE II=1
         	if(i<=j) break;
         	else{
 				temp = hls::fabs(input_mat[i*N+j]);

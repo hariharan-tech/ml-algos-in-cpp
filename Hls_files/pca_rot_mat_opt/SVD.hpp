@@ -6,14 +6,14 @@ void matrix_mul(const float a_in[N*N],const float b_in[N*N], float c_out[N*N])
 {
     #pragma HLS INLINE off
 	float a[N*N],b[N*N];
-    #pragma HLS ARRAY_RESHAPE variable=a factor=N type=cyclic
-    #pragma HLS ARRAY_RESHAPE variable=b factor=N type=block
+    #pragma HLS ARRAY_PARTITION variable=a factor=N type=cyclic
+    #pragma HLS ARRAY_PARTITION variable=b factor=N type=block
 	COPY_A_B: for(int i=0; i<N*N; i++){
 		a[i]=a_in[i];
 		b[i]=b_in[i];
 	}
 
- //    Matrix multiplication of 2 NxN matrices
+     /* Matrix multiplication of 2 NxN matrices */
    float sum;
    MATMUL_R: for (int i=0;i<N;i++)
       MATMUL_C: for (int j=0; j<N;j++)
@@ -21,7 +21,7 @@ void matrix_mul(const float a_in[N*N],const float b_in[N*N], float c_out[N*N])
          sum=0;
          MATMUL_ADD: for (int k=0;k<N;k++)
          {
-//           #pragma HLS PIPELINE II=1
+         //  #pragma HLS PIPELINE II=1
             sum+=a[N*i+k]*b[k*N+j];
          }
          c_out[i*N+j]=sum;
@@ -29,19 +29,20 @@ void matrix_mul(const float a_in[N*N],const float b_in[N*N], float c_out[N*N])
 
 //	MATMUL_R: for(int i=0;i<N;i++){
 //	  float sum[N];
+//      #pragma HLS ARRAY_PARTITION variable=sum type=complete
 //	  MATMUL_ADD: for (int k=0;k<N;k++)
 //	  {
+//		  float a_temp=a[N*i+k];
+//	      #pragma HLS PIPELINE II=1
 //	    MATMUL_C: for (int j=0; j<N;j++)
 //	    {
-//	      #pragma HLS PIPELINE II=1
 //	      float temp=(k==0)? static_cast< float > (0): sum[j];
-//	      sum[j]=temp+a[N*i+k]*b[k*N+j];
-//	      #pragma HLS DEPENDENCE false variable=sum
+//	      sum[j]=temp+a_temp*b[k*N+j];
 //	    }
 //	  }
 //	 WRITE_ROW_SUM:for(int j=0;j<N;j++){
 //	   #pragma HLS PIPELINE II=1
-//	         c[i*N+j]=sum[j];
+//		 c[i*N+j]=sum[j];
 //	 }
 //
 //	}
@@ -75,6 +76,7 @@ void mult_J_AJt(float const sin_val, float const cos_val, float const a[N*N], in
 template<int N>
 void opt_rot_init(const int i, const int j, const float a[N*N], float rot_mat[N*N]) //, float *sin_value, float *cos_value)
 {
+#pragma HLS INLINE off
    float aii, aij; // variable to store cos(theta) and sin(theta)
    float theta;
 

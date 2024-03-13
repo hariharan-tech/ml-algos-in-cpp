@@ -1,7 +1,7 @@
 #define PRECISION 0.1f
-#define DIM 15
+#define DIM 4
 #define ENERGY_FACTOR 0.9f
-#define L_MAX 4
+#define L_MAX 5
 
 void svd(const float a_in[DIM*DIM],float eigval_op[DIM*DIM],float eigvec_op[DIM*DIM]);
 
