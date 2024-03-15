@@ -1,5 +1,5 @@
 #define PRECISION 0.1f
-#define DIM 4
+#define DIM 32
 #define ENERGY_FACTOR 0.9f
 #define L_MAX 5
 
