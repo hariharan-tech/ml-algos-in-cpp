@@ -1,14 +1,20 @@
 //#include <stdio.h>
 #include "SVD.hpp"
 #include "SVD_top.h"
+#include "sort.hpp"
+#include <iostream>
 
-void svd(const float a_in[DIM*DIM],float eigval_op[DIM],float eigvec_op[DIM*DIM])
+void pca(const float a_in[DIM*DIM],float sorted_eigvec[L_MAX*DIM],int &index_count, float &comp_rate)
 {
 	#pragma HLS INTERFACE mode=s_axilite port=return
 	#pragma HLS INTERFACE mode=s_axilite port=a_in
-	#pragma HLS INTERFACE mode=s_axilite port=eigval_op
-	#pragma HLS INTERFACE mode=s_axilite port=eigvec_op
+	#pragma HLS INTERFACE mode=s_axilite port=sorted_eigvec
+	#pragma HLS INTERFACE mode=s_axilite port=index_count
+	#pragma HLS INTERFACE mode=s_axilite port=comp_rate
+
+
     float temp[DIM*DIM],eigvec[DIM*DIM],a[DIM*DIM];
+    float eigval[DIM];
   READ_A_LOOP:for(int i=0;i<DIM*DIM;i++){
 	  a[i] = a_in[i];
   }
@@ -19,10 +25,8 @@ void svd(const float a_in[DIM*DIM],float eigval_op[DIM],float eigvec_op[DIM*DIM]
        eigvec[r*DIM+c] = c==r?1:0 ;
 
   int row,col;
-//  float prec;
-//  prec=std::numeric_limits<float>::max();
   float sin_val, cos_val;
-  ITER_LOOP: for(int i=0;i<4*DIM;i++)
+  ITER_LOOP: for(int i=0;i<8*DIM;i++)
   {
       non_diag_max<DIM>(a,&row,&col);
       opt_rot_init<DIM>(row,col,a,&sin_val,&cos_val) ;
@@ -33,19 +37,32 @@ void svd(const float a_in[DIM*DIM],float eigval_op[DIM],float eigvec_op[DIM*DIM]
       //Reassign Eigen vector Matrix
 
       ITER_I_EIGVEC_WRITE: for (int index=0;index < DIM*DIM; index++){
-//          #pragma HLS UNROLL
             #pragma HLS PIPELINE II=1
           eigvec[index]=temp[index];
       }
 
   }
-  WRITE_LOOP_EIGVEC:for(int i=0;i<DIM*DIM;i++){
-      #pragma HLS PIPELINE II=1
-	  eigvec_op[i] = eigvec[i];
-  }
+
   WRITE_LOOP_EIGVAL:for(int i=0;i<DIM;i++){
-	  eigval_op[i] = hls::abs(a[i*DIM+i]);
+     #pragma HLS PIPELINE II=1
+	  eigval[i] = hls::abs(a[i*DIM+i]);
   }
+
+  int sorted_index[DIM],index;
+  float sorted_eig_buff[DIM], selected_eigenvec[L_MAX*DIM],comp;
+
+  sort_desc<DIM>(eigval,sorted_eig_buff, sorted_index);
+  energy_index_count<DIM>(sorted_eig_buff,index,comp);
+  sort_eigenvector<DIM>(eigvec,sorted_index,index,selected_eigenvec);
+
+  index_count=index;
+  comp_rate=comp;
+
+  WRITE_LOOP_SORTED_EIGVAL:for(int i=0;i<L_MAX*DIM;i++){
+     #pragma HLS PIPELINE II=1
+	  sorted_eigvec[i] = selected_eigenvec[i];
+  }
+
 }
 
 

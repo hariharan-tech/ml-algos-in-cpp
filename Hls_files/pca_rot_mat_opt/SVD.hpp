@@ -56,7 +56,6 @@ void mult_A_Jt(float const sin_val, float const cos_val, float const a[N*N], int
   A_Jt_RLOOP:for(int i=0;i<N;i++){
     A_Jt_CLOOP:for(int j=0;j<N;j++){
      	#pragma HLS PIPELINE II=1
-//#pragma HLS UNROLL factor=N/2
 //      a_jt[i*N+j] = (j==p||j==q)?((j==p)?(a[i*N+p]*cos_val + a[i*N+q]*sin_val):(-a[i*N+p]*sin_val + a[i*N+q]*cos_val)):(a[i*N+j]);
         a_jt[i*N+j]= (j==p)? a[i*N+p]*cos_val+a[i*N+q]*sin_val : (j==q)?  a[i*N+p]*-1*sin_val+a[i*N+q]*cos_val : a[i*N+j];
     }
@@ -70,7 +69,6 @@ void mult_J_A(float const sin_val, float const cos_val, float const a[N*N], int 
   J_A_RLOOP:for(int i=0;i<N;i++){
     J_A_CLOOP:for(int j=0;j<N;j++){
         #pragma HLS PIPELINE II=1
-//#pragma HLS UNROLL factor=N/2
 //      j_a[i*N+j] = (i==p||i==q)?((i==p)?(a[p*N+j]*cos_val + a[q*N+j]*sin_val):(-a[p*N+j]*sin_val + a[q*N+j]*cos_val)):(a[i*N+j]);
     	j_a[i*N+j]= (i==p)? a[p*N+j]*cos_val+a[q*N+j]*sin_val : (i==q)?  a[p*N+j]*-1*sin_val+a[q*N+j]*cos_val : a[i*N+j];
     }
@@ -99,7 +97,6 @@ void non_diag_max(float const input_mat[N*N], int *r, int *c)
 {
     #pragma HLS INLINE off
     float max_val = 0,temp; int max_r=0,max_c=0;
-//    unsigned char flag;
     MAX_R: for(int i=0;i<N;i++){
 //        MAX_C: for(int j=i+1;j<N;j++){
 //        	temp = hls::fabs(input_mat[i*N+j]);
@@ -134,3 +131,5 @@ void non_diag_sum(float const input_mat[N*N], float *sum){
   }
   *sum = 2*temp;
 }
+
+
