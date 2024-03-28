@@ -4,20 +4,25 @@
 #include "sort.hpp"
 #include <iostream>
 
-void pca(const float a_in[DIM*DIM],float sorted_eigvec[L_MAX*DIM],int &index_count, float &comp_rate)
+void pca(mystream &a_in, mystream &sorted_eigvec,int &index_count, float &comp_rate)
 {
-	#pragma HLS INTERFACE mode=s_axilite port=return
-	#pragma HLS INTERFACE mode=s_axilite port=a_in
-	#pragma HLS INTERFACE mode=s_axilite port=sorted_eigvec
+	#pragma HLS INTERFACE mode=ap_ctrl_none port=return
+	#pragma HLS INTERFACE mode=axis port=a_in
+    #pragma HLS INTERFACE mode=axis port=sorted_eigvec
 	#pragma HLS INTERFACE mode=s_axilite port=index_count
 	#pragma HLS INTERFACE mode=s_axilite port=comp_rate
 
-
+    int input_ind=0;
     float temp[DIM*DIM],eigvec[DIM*DIM],a[DIM*DIM];
     float eigval[DIM];
-  READ_A_LOOP:for(int i=0;i<DIM*DIM;i++){
-	  a[i] = a_in[i];
-  }
+
+    stream_inp in_data;
+
+  do{
+	  in_data=a_in.read();
+	  a[input_ind] = in_data.data;
+	  input_ind++;
+  } while(!in_data.last);
 
   //Initialize Eigen Vector matrix
   INIT_R0: for(int r=0; r<DIM ;r++)
@@ -55,12 +60,15 @@ void pca(const float a_in[DIM*DIM],float sorted_eigvec[L_MAX*DIM],int &index_cou
   energy_index_count<DIM>(sorted_eig_buff,index,comp);
   sort_eigenvector<DIM>(eigvec,sorted_index,index,selected_eigenvec);
 
+
   index_count=index;
   comp_rate=comp;
-
+  stream_inp out_data;
   WRITE_LOOP_SORTED_EIGVAL:for(int i=0;i<L_MAX*DIM;i++){
      #pragma HLS PIPELINE II=1
-	  sorted_eigvec[i] = selected_eigenvec[i];
+	  out_data.data=selected_eigenvec[i];
+	  out_data.last= (i==(L_MAX*DIM)-1 )?1:0;
+	  sorted_eigvec.write(out_data);
   }
 
 }

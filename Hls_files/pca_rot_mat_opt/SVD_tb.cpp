@@ -5,11 +5,11 @@
 
 int main(void)
 {
-//  float a[DIM*DIM]= { 10, 2, 3, 4, // testing negative eigenvalue testcase
-//                      2, 6, 7, 8,
-//                      3, 7, 10, 11,
-//                      4, 8, 11, 10};
-//
+//  float a[DIM*DIM]= {0.7016083 , 0.42785743, 0.25512168, 0.01223199, 0.42785743,
+//				       0.29104942, 0.59649056, 0.13261513, 0.25512168, 0.59649056,
+//				       0.04787561, 0.44952226, 0.01223199, 0.13261513, 0.44952226,
+//				       0.7467613 };
+
 	float a[DIM*DIM]= {0.503835  , 0.9355842 , 0.953972  , 0.33422518, 0.5711793 ,
 		       0.8042752 , 0.980986  , 0.8583856 , 0.3060989 , 0.53269196,
 		       0.06174436, 0.86542773, 0.84242594, 0.94639796, 0.7485421 ,
@@ -61,30 +61,30 @@ int main(void)
   int index;
 
   float abs_diff = 0.0f, temp;
+  stream_inp test_input, test_output;
+  mystream input_stream, output_stream;
+  for(int i=0;i<DIM*DIM;i++){
+	  test_input.data = a[i];
+	  test_input.last = (i==DIM*DIM-1)?(1):(0);
+	  input_stream.write(test_input);
+  }
 
-    svd(a,sorted_eigvec,index,comp); //,eig_vector);
-   std::cout<<"Required eigenvalue count: "<<index<<"\nCompression percentage: "<<comp<<std::endl;
-	for (int i=0;i<L_MAX;i++){
-//		std::cout<<i<<"\t"<<eig_value[i]<<"\n";
-		for(int j=0;j<DIM;j++)
-			std::cout<<sorted_eigvec[i*DIM+j]<<"  ";
-		std::cout<<"\n";
-  	}
+  pca(input_stream,output_stream,index,comp);
 
 
-//
-//	std::cout<<std::endl;
-//	for (int i=0;i<DIM;i++){
-//			for(int j=0;j<DIM;j++)
-//				std::cout<<eig_vector[i*DIM+j]<<"\t";
-//			std::cout<<std::endl;
-//		 }
-//	std::cout<<std::endl;
-//	for (int i=0;i<index;i++){
-//		for(int j=0;j<DIM;j++)
-//			std::cout<<sorted_eigvec[i*DIM+j]<<"\t";
-//		std::cout<<std::endl;
-//	 }
 
+  do{
+
+	  for (int i=0;i<L_MAX;i++){
+		  for (int j=0;j<DIM;j++){
+			 test_output=output_stream.read();
+	         std::cout<<test_output.data<<" ";
+		  }
+	  std::cout<<std::endl;
+	  }
+  }while(!test_output.last);
+
+
+   std::cout<<std::endl<<comp;
    return 0;
 }
