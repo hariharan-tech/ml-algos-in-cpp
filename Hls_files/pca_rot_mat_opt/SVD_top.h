@@ -2,17 +2,13 @@
 #define _SVD_TOP_H_
 
 #define PRECISION 0.1f
-#define DIM 4
+#define DIM 30
 #define ENERGY_FACTOR 0.9f
-#define L_MAX 3
+#define L_MAX 15
 #include "hls_stream.h"
 #include "ap_int.h"
 #include "ap_axi_sdata.h"
 
-// struct stream_inp{
-//	float data;
-//	ap_uint<1> last;
-//} ;
 
 typedef hls::axis<float, 0, 0, 0> stream_inp;
 typedef hls::stream<stream_inp> mystream;

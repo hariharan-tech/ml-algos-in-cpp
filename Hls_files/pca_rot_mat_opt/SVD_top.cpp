@@ -16,13 +16,13 @@ void pca(mystream &a_in, mystream &sorted_eigvec,int &index_count, float &comp_r
     float temp[DIM*DIM],eigvec[DIM*DIM],a[DIM*DIM];
     float eigval[DIM];
 
-    stream_inp in_data;
+    stream_inp data_stream;
 
-  do{
-	  in_data=a_in.read();
-	  a[input_ind] = in_data.data;
+  DATA_READ: do{
+	  data_stream=a_in.read();
+	  a[input_ind] = data_stream.data;
 	  input_ind++;
-  } while(!in_data.last);
+  } while(!data_stream.last);
 
   //Initialize Eigen Vector matrix
   INIT_R0: for(int r=0; r<DIM ;r++)
@@ -31,7 +31,7 @@ void pca(mystream &a_in, mystream &sorted_eigvec,int &index_count, float &comp_r
 
   int row,col;
   float sin_val, cos_val;
-  ITER_LOOP: for(int i=0;i<8*DIM;i++)
+  ITER_LOOP: for(int i=0;i<DIM*(DIM-1)/2;i++)
   {
       non_diag_max<DIM>(a,&row,&col);
       opt_rot_init<DIM>(row,col,a,&sin_val,&cos_val) ;
@@ -63,12 +63,11 @@ void pca(mystream &a_in, mystream &sorted_eigvec,int &index_count, float &comp_r
 
   index_count=index;
   comp_rate=comp;
-  stream_inp out_data;
   WRITE_LOOP_SORTED_EIGVAL:for(int i=0;i<L_MAX*DIM;i++){
      #pragma HLS PIPELINE II=1
-	  out_data.data=selected_eigenvec[i];
-	  out_data.last= (i==(L_MAX*DIM)-1 )?1:0;
-	  sorted_eigvec.write(out_data);
+	  data_stream.data=selected_eigenvec[i];
+	  data_stream.last= (i==(L_MAX*DIM)-1 )?1:0;
+	  sorted_eigvec.write(data_stream);
   }
 
 }

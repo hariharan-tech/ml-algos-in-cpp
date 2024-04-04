@@ -85,6 +85,6 @@ int main(void)
   }while(!test_output.last);
 
 
-   std::cout<<std::endl<<comp;
+   std::cout<<std::endl<<index;
    return 0;
 }
