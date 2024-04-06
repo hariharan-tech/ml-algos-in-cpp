@@ -4,7 +4,7 @@
 #include "sort.hpp"
 #include <iostream>
 
-void pca(mystream &a_in, mystream &sorted_eigvec,int &index_count, float &comp_rate)
+void svd_sort_select(stream_port &a_in, stream_port &sorted_eigvec,int &index_count, float &comp_rate)
 {
 	#pragma HLS INTERFACE mode=ap_ctrl_none port=return
 	#pragma HLS INTERFACE mode=axis port=a_in
@@ -16,7 +16,7 @@ void pca(mystream &a_in, mystream &sorted_eigvec,int &index_count, float &comp_r
     float temp[DIM*DIM],eigvec[DIM*DIM],a[DIM*DIM];
     float eigval[DIM];
 
-    stream_inp data_stream;
+    s_packet data_stream;
 
   DATA_READ: do{
 	  data_stream=a_in.read();
@@ -31,7 +31,7 @@ void pca(mystream &a_in, mystream &sorted_eigvec,int &index_count, float &comp_r
 
   int row,col;
   float sin_val, cos_val;
-  ITER_LOOP: for(int i=0;i<DIM*(DIM-1)/2;i++)
+  ITER_LOOP: for(int i=0;i<DIM*(DIM-1);i++)
   {
       non_diag_max<DIM>(a,&row,&col);
       opt_rot_init<DIM>(row,col,a,&sin_val,&cos_val) ;
@@ -63,11 +63,12 @@ void pca(mystream &a_in, mystream &sorted_eigvec,int &index_count, float &comp_r
 
   index_count=index;
   comp_rate=comp;
-  WRITE_LOOP_SORTED_EIGVAL:for(int i=0;i<L_MAX*DIM;i++){
-     #pragma HLS PIPELINE II=1
-	  data_stream.data=selected_eigenvec[i];
-	  data_stream.last= (i==(L_MAX*DIM)-1 )?1:0;
-	  sorted_eigvec.write(data_stream);
+  WRITE_LOOP_SORTED_EIGENVAL_ROW:for(int i=0;i<DIM;i++){
+	  WRITE_LOOP_SORTED_EIGENVAL_COL:for(int j=0;j<L_MAX;j++){
+		  data_stream.data=selected_eigenvec[j*DIM+i];
+		  data_stream.last= (i*L_MAX+j==(L_MAX*DIM)-1)?1:0;
+		  sorted_eigvec.write(data_stream);
+	  }
   }
 
 }

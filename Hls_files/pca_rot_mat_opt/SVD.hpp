@@ -1,53 +1,5 @@
 #include "hls_math.h"
 
-template <int N>
-//void matrix_mul(const float a_in[N*N],const float b_in[N*N], float c_out[N*N])
-void matrix_mul(const float a[N*N],const float b[N*N], float c[N*N])
-{
-    #pragma HLS INLINE off
-//	float a[N*N],b[N*N];
-//    #pragma HLS ARRAY_PARTITION variable=a factor=N type=cyclic
-//    #pragma HLS ARRAY_PARTITION variable=b factor=N type=block
-//	COPY_A_B: for(int i=0; i<N*N; i++){
-//		a[i]=a_in[i];
-//		b[i]=b_in[i];
-//	}
-//
-//     /* Matrix multiplication of 2 NxN matrices */
-//   float sum;
-//   MATMUL_R: for (int i=0;i<N;i++)
-//      MATMUL_C: for (int j=0; j<N;j++)
-//      {
-//         sum=0;
-//          #pragma HLS PIPELINE II=1
-//         MATMUL_ADD: for (int k=0;k<N;k++)
-//         {
-//            #pragma HLS UNROLL
-//            sum+=a[N*i+k]*b[k*N+j];
-//         }
-//         c_out[i*N+j]=sum;
-//      }
-
-	MATMUL_R: for(int i=0;i<N;i++){
-		float sum[N];
-		#pragma HLS ARRAY_PARTITION variable=sum type=complete
-	  MATMUL_ADD: for (int k=0;k<N;k++)
-	  {
-		  float a_temp=a[N*i+k];
-	      #pragma HLS PIPELINE II=1
-	    MATMUL_C: for (int j=0; j<N;j++)
-	    {
-	      float temp=(k==0)? static_cast< float > (0): sum[j];
-	      sum[j]=temp+a_temp*b[k*N+j];
-	    }
-	  }
-	 WRITE_ROW_SUM:for(int j=0;j<N;j++){
-	   #pragma HLS PIPELINE II=1
-		 c[i*N+j]=sum[j];
-	 }
-
-	}
-}
 
 // Computes JA given A and sin, cos values
 template<int N>
