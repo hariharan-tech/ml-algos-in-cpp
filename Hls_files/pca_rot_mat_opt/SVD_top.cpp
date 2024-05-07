@@ -2,7 +2,7 @@
 #include "SVD.hpp"
 #include "SVD_top.h"
 #include "sort.hpp"
-#include <iostream>
+//#include <iostream>
 
 void svd_sort_select(stream_port &a_in, stream_port &sorted_eigvec,int &index_count, float &comp_rate)
 {
@@ -13,16 +13,20 @@ void svd_sort_select(stream_port &a_in, stream_port &sorted_eigvec,int &index_co
 	#pragma HLS INTERFACE mode=s_axilite port=comp_rate
 
     int input_ind=0;
-    float temp[DIM*DIM],eigvec[DIM*DIM],a[DIM*DIM];
+    float temp[DIM*DIM],eigvec[DIM*DIM],a[DIM*DIM], anext[DIM*DIM];
     float eigval[DIM];
+
+//    float a_new[DIM*DIM];
 
     s_packet data_stream;
 
   DATA_READ: do{
 	  data_stream=a_in.read();
 	  a[input_ind] = data_stream.data;
+//	  a_new[input_ind] = data_stream.data;
 	  input_ind++;
   } while(!data_stream.last);
+
 
   //Initialize Eigen Vector matrix
   INIT_R0: for(int r=0; r<DIM ;r++)
@@ -35,15 +39,34 @@ void svd_sort_select(stream_port &a_in, stream_port &sorted_eigvec,int &index_co
   {
       non_diag_max<DIM>(a,&row,&col);
       opt_rot_init<DIM>(row,col,a,&sin_val,&cos_val) ;
-      mult_A_Jt<DIM>(sin_val,cos_val,a,row,col,temp);
-      mult_J_A<DIM>(sin_val ,cos_val,temp,row,col,a);
+//      mult_A_Jt<DIM>(sin_val,cos_val,a,row,col,temp);
+//      mult_J_A<DIM>(sin_val ,cos_val,temp,row,col,a);
+      mult_JAJt<DIM>(sin_val,cos_val,a,row,col,anext);
       mult_J_A<DIM>(sin_val,cos_val,eigvec,row,col,temp);
 
+
+//      std::cout<<std::endl<<row<<" - "<<col;
+//      for(int i=0;i<DIM;i++){
+//      		for(int j=0;j<DIM;j++)
+//      			std::cout<<anext[i*DIM+j]<<" ";
+////      			std::cout<<(a[i*DIM+j]==anext[i*DIM+j])<<" ";
+//      		std::cout<<std::endl;
+//      }
+//
+//      for(int i=0;i<DIM;i++){
+//            		for(int j=0;j<DIM;j++)
+//            			std::cout<<a[i*DIM+j]<<" ";
+//      //      			std::cout<<(a[i*DIM+j]==anext[i*DIM+j])<<" ";
+//            		std::cout<<std::endl;
+//      }
+
+//      std::cout<<std::endl;
       //Reassign Eigen vector Matrix
 
       ITER_I_EIGVEC_WRITE: for (int index=0;index < DIM*DIM; index++){
             #pragma HLS PIPELINE II=1
           eigvec[index]=temp[index];
+          a[index] = anext[index];
       }
 
   }
@@ -51,6 +74,7 @@ void svd_sort_select(stream_port &a_in, stream_port &sorted_eigvec,int &index_co
   WRITE_LOOP_EIGVAL:for(int i=0;i<DIM;i++){
      #pragma HLS PIPELINE II=1
 	  eigval[i] = hls::abs(a[i*DIM+i]);
+//	  std::cout<<a[i*DIM+i]<<std::endl;
   }
 
   int sorted_index[DIM],index;

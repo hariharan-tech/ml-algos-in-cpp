@@ -1,11 +1,12 @@
 #include "projection_unit.h"
 
-void projection(stream_port &data,stream_port &eig_vec, stream_port &result){
+void projection(stream_port &data,stream_port &eig_vec, stream_port &result, int* status){
 
 	#pragma HLS INTERFACE mode=ap_ctrl_none port=return
 	#pragma HLS INTERFACE mode=axis port=data
 	#pragma HLS INTERFACE mode=axis port=eig_vec
 	#pragma HLS INTERFACE mode=axis port=result
+	#pragma HLS INTERFACE mode=s_axilite port=status
 
 	float data_in[DATA_SIZE*BANDS],eig_vec_in[BANDS*L_MAX],result_in[DATA_SIZE*L_MAX];
 	int index=0;
@@ -24,8 +25,9 @@ void projection(stream_port &data,stream_port &eig_vec, stream_port &result){
 	    index++;
 	}while(!read_stream.last);
 
+//	status = 2;
 
-	#pragma HLS ARRAY_PARTITION variable=data_in type=cyclic factor=BANDS
+//	#pragma HLS ARRAY_PARTITION variable=data_in type=cyclic factor=BANDS
 	#pragma HLS ARRAY_PARTITION variable=eig_vec_in type=block factor=BANDS
 
 	row: for (int i=0; i<DATA_SIZE; i++){
@@ -38,6 +40,8 @@ void projection(stream_port &data,stream_port &eig_vec, stream_port &result){
 	         result_in[i*L_MAX+j] = temp;
 		}
 	}
+
+	   *status = 1;
 
 		for(int i=0;i<DATA_SIZE*L_MAX;i++){
 	         read_stream.data=result_in[i];
